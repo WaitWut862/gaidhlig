@@ -1,0 +1,72 @@
+{{define "word"}}
+<div class="word-entry">
+    <h2>{{.Word}}</h2>
+    <div class="meta">
+        {{if .POS}}<span class="pos">{{.POS}}</span>{{end}}
+        {{if .Gender}}<span class="gender">{{.Gender}}</span>{{end}}
+    </div>
+    {{if .Senses}}
+    <div class="senses">
+        <h3>Definitions</h3>
+        {{range .Senses}}
+        <div class="sense">{{.Gloss}}
+            {{if .ExampleGd}}
+            <div class="example">
+                <p class="example-gd">{{.ExampleGd}}</p>
+                <p class="example-en">{{.ExampleEn}}</p>
+            </div>
+            {{end}}
+        </div>
+        {{end}}
+    </div>
+    {{end}}
+    {{if .Synonyms}}
+    <div class="synonyms">
+        <h3>Synonyms</h3>
+        {{range .Synonyms}}
+        <span class="synonym"
+            hx-get="/word/{{.ID}}"
+            hx-target="#view-panel"
+            hx-trigger="click"
+            hx-swap="innerHTML">{{.Word}}</span>
+        {{end}}
+    </div>
+    {{end}}
+    {{if .Parents}}
+    <div class="parents">
+        <h3>Derives from</h3>
+        {{range .Parents}}
+        <span class="parent">{{.Word}}</span>
+        {{end}}
+    </div>
+    {{end}}
+    {{if .IPA}}
+    <div class="ipa">
+        <h3>Pronunciation</h3>
+        <p>{{.IPA}}</p>
+    </div>
+    {{end}}
+    {{if .Etymology}}
+    <div class="etymology">
+        <h3>Etymology</h3>
+        <p>{{.Etymology}}</p>
+    </div>
+    {{end}}
+    {{if .Forms}}
+    <div class="forms">
+        <h3>Forms</h3>
+        {{range .Forms}}
+        <div class="form">{{.Form}} <span class="tags">{{.Tags}}</span></div>
+        {{end}}
+    </div>
+    {{end}}
+    {{if .Children}}
+    <div class="children">
+        <h3>Derived words</h3>
+        {{range .Children}}
+        <div class="child">{{.Word}}{{if .English}} — {{.English}}{{end}}</div>
+        {{end}}
+    </div>
+    {{end}}
+</div>
+{{end}}

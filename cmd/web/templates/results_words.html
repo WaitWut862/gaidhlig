@@ -1,0 +1,29 @@
+{{define "results_words"}}
+<div id="filters">
+    <select name="pos"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form">
+        <option value="">All parts of speech</option>
+        <option value="noun">Noun</option>
+        <option value="verb">Verb</option>
+        <option value="adj">Adjective</option>
+        <option value="adv">Adverb</option>
+        <option value="prep">Preposition</option>
+        <option value="pron">Pronoun</option>
+        <option value="conj">Conjunction</option>
+    </select>
+</div>
+{{range .Items}}
+<div class="result-item"
+    hx-get="/word/{{.ID}}"
+    hx-target="#view-panel"
+    hx-trigger="click"
+    hx-swap="innerHTML">
+    {{.Word}}
+</div>
+{{else}}
+<p class="no-results">No words found.</p>
+{{end}}
+{{end}}

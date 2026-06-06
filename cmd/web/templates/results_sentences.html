@@ -1,0 +1,23 @@
+{{define "results_sentences"}}
+<div id="filters">
+    <select name="exact"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form">
+        <option value="false">Lemma match</option>
+        <option value="true">Exact form</option>
+    </select>
+</div>
+{{range .Items}}
+<div class="result-item"
+    hx-get="/sentence/{{.ID}}"
+    hx-target="#view-panel"
+    hx-trigger="click"
+    hx-swap="innerHTML">
+    {{.TextGd}}
+</div>
+{{else}}
+<p class="no-results">No sentences found.</p>
+{{end}}
+{{end}}

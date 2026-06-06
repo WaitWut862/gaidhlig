@@ -1,0 +1,188 @@
+package main
+
+import (
+	"database/sql"
+	"html/template"
+	"log"
+	"net/http"
+	"strconv"
+
+	_ "github.com/mattn/go-sqlite3"
+	"language_v1/cmd/web/db"
+)
+
+var tmpl = template.Must(template.ParseGlob("./cmd/web/templates/*.html"))
+
+type App struct {
+	DB *sql.DB
+}
+
+func main() {
+	database, err := sql.Open("sqlite3", "./internal/modules/gaidhlig/gaidhlig.db")
+	if err != nil {
+		log.Fatal("Error opening db:", err)
+	}
+	if err := database.Ping(); err != nil {
+		log.Fatal("Error connecting to db:", err)
+	}
+	defer database.Close()
+
+	app := &App{DB: database}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", app.handleHome)
+	mux.HandleFunc("/search", app.handleSearch)
+	mux.HandleFunc("/word/{id}", app.handleWord)
+	mux.HandleFunc("/sentence/{id}", app.handleSentence)
+	mux.HandleFunc("/rule/{id}", app.handleRule)
+	mux.HandleFunc("/search/more", app.handleSearchMore)
+
+	log.Println("Server running at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", mux))
+}
+
+func (a *App) handleHome(w http.ResponseWriter, r *http.Request) {
+	if err := tmpl.ExecuteTemplate(w, "base", nil); err != nil {
+		log.Println("Template error:", err)
+	}
+}
+
+func (a *App) handleWord(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	entry, err := db.GetWord(a.DB, id)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if err := tmpl.ExecuteTemplate(w, "word", entry); err != nil {
+		log.Println("Template error:", err)
+	}
+}
+
+func (a *App) handleSentence(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	entry, err := db.GetSentence(a.DB, id)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	tokens, err := db.GetSentenceAnalysis(a.DB, id)
+	if err != nil {
+		log.Println("Error fetching tokens:", err)
+		// don't 404 — sentence exists, analysis may just be missing
+	}
+	view := db.SentenceView{Entry: entry, Tokens: tokens}
+	if err := tmpl.ExecuteTemplate(w, "sentence", view); err != nil {
+		log.Println("Template error:", err)
+	}
+}
+
+func (a *App) handleRule(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	entry, err := db.GetRule(a.DB, id)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	if err := tmpl.ExecuteTemplate(w, "rule", entry); err != nil {
+		log.Println("Template error:", err)
+	}
+}
+
+func (a *App) handleSearch(w http.ResponseWriter, r *http.Request) {
+	queryType := r.URL.Query().Get("type")
+	query := r.URL.Query().Get("query")
+	pos := r.URL.Query().Get("pos")
+	exactForm := r.URL.Query().Get("exact") == "true"
+	category := r.URL.Query().Get("category")
+	difficulty := r.URL.Query().Get("difficulty")
+	offsetStr := r.URL.Query().Get("offset")
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		offset = 0
+	}
+	switch queryType {
+	case "words":
+		results, err := db.SearchWords(a.DB, query, pos, offset)
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+		view := db.WordListView{Items: results, NextOffset: offset + 50, Query: query, POS: pos}
+		if err := tmpl.ExecuteTemplate(w, "results_words", view); err != nil {
+			log.Println("Template error:", err)
+		}
+	case "sentences":
+		results, err := db.SearchSentences(a.DB, query, exactForm, offset)
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+		view := db.SentenceListView{Items: results, NextOffset: offset + 50, Query: query, Exact: r.URL.Query().Get("exact")}
+		if err := tmpl.ExecuteTemplate(w, "results_sentences", view); err != nil {
+			log.Println("Template error:", err)
+		}
+	case "rules":
+		results, err := db.SearchRules(a.DB, query, category, difficulty, offset)
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+		view := db.RuleListView{Items: results, NextOffset: offset + 50, Query: query, Category: category, Difficulty: difficulty}
+		if err := tmpl.ExecuteTemplate(w, "results_rules", view); err != nil {
+			log.Println("Template error:", err)
+		}
+	}
+}
+
+func (a *App) handleSearchMore(w http.ResponseWriter, r *http.Request) {
+	queryType := r.URL.Query().Get("type")
+	query := r.URL.Query().Get("query")
+	pos := r.URL.Query().Get("pos")
+	exactForm := r.URL.Query().Get("exact") == "true"
+	category := r.URL.Query().Get("category")
+	difficulty := r.URL.Query().Get("difficulty")
+	offsetStr := r.URL.Query().Get("offset")
+	offset, err := strconv.Atoi(offsetStr)
+	if err != nil {
+		offset = 0
+	}
+	switch queryType {
+	case "words":
+		results, err := db.SearchWords(a.DB, query, pos, offset)
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+		view := db.WordListView{Items: results, NextOffset: offset + 50, Query: query, POS: pos}
+		tmpl.ExecuteTemplate(w, "items_words", view)
+	case "sentences":
+		results, err := db.SearchSentences(a.DB, query, exactForm, offset)
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+		view := db.SentenceListView{Items: results, NextOffset: offset + 50, Query: query, Exact: r.URL.Query().Get("exact")}
+		tmpl.ExecuteTemplate(w, "items_sentences", view)
+	case "rules":
+		results, err := db.SearchRules(a.DB, query, category, difficulty, offset)
+		if err != nil {
+			log.Println("Error:", err)
+			return
+		}
+		view := db.RuleListView{Items: results, NextOffset: offset + 50, Query: query, Category: category, Difficulty: difficulty}
+		tmpl.ExecuteTemplate(w, "items_rules", view)
+	}
+}

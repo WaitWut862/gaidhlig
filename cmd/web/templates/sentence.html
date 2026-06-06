@@ -1,0 +1,33 @@
+{{define "sentence"}}
+<div class="sentence-entry">
+    <p class="text-gd">{{.Entry.TextGd}}</p>
+    <p class="text-en">{{.Entry.TextEn}}</p>
+
+    {{if .Tokens}}
+    <table class="token-breakdown">
+        <thead>
+            <tr>
+                <th>Token</th>
+                <th>Lemma</th>
+                <th>POS</th>
+                <th>Features</th>
+                <th>Dep. Relation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Tokens}}
+            <tr>
+                <td>{{.Token}}</td>
+                <td>{{.LemmaText}}</td>
+                <td>{{.UPOS}}</td>
+                <td>{{.Feats}}</td>
+                <td>{{.DepRel}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    <p class="no-analysis">No breakdown available.</p>
+    {{end}}
+</div>
+{{end}}

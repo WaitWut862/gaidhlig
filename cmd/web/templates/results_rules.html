@@ -1,0 +1,42 @@
+{{define "results_rules"}}
+<div id="filters">
+    <select name="category"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form">
+        <option value="">All categories</option>
+        <option value="syntax">Syntax</option>
+        <option value="morphology">Morphology</option>
+        <option value="phonology">Phonology</option>
+        <option value="phonetics">Phonetics</option>
+        <option value="typology">Typology</option>
+        <option value="terminology">Terminology</option>
+    </select>
+    <select name="difficulty"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form">
+        <option value="">All levels</option>
+        <option value="A1">A1</option>
+        <option value="A2">A2</option>
+        <option value="B1">B1</option>
+        <option value="B2">B2</option>
+        <option value="C1">C1</option>
+        <option value="C2">C2</option>
+    </select>
+</div>
+{{range .Items}}
+<div class="result-item"
+    hx-get="/rule/{{.ID}}"
+    hx-target="#view-panel"
+    hx-trigger="click"
+    hx-swap="innerHTML">
+    {{.Title}}
+    <span class="meta">{{.Category}} / {{.Difficulty}}</span>
+</div>
+{{else}}
+<p class="no-results">No rules found.</p>
+{{end}}
+{{end}}
