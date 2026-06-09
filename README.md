@@ -4,7 +4,7 @@ A linguistic research tool for Scottish Gaelic — search words, sentences, and 
 
 ## Features
 
-- Search across 17,000+ lemmas, 1,200 example sentences, and 343 grammar rules
+- Search across 17,000+ lemmas, 1,200 example sentences, and 342 grammar rules
 - Filter results by part of speech, CEFR difficulty, and grammar category
 - Token-level morphological breakdown for every sentence, powered by UDPipe and the CoNLL-U format
 - Word entries include definitions, inflected forms, synonyms, derived words, etymology, and IPA pronunciation where available
@@ -45,3 +45,9 @@ A linguistic research tool for Scottish Gaelic — search words, sentences, and 
 - Personalized lessons and lesson plans
 - CEFR difficulty tagging for more than just rules
 - Expression and idiom support
+
+## Licence
+
+This project is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+Incorporates data from the [Unified Scottish Gaelic Wordnet](http://ukc.disi.unitn.it/index.php/gaelic/) by Gábor Bella et al., licensed under CC BY-SA 3.0.
