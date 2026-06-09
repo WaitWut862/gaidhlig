@@ -35,6 +35,11 @@
             <p>Select an item from the search panel.</p>
         </div>
     </div>
+    <button id="panel-toggle" onclick="
+        var app = document.getElementById('app');
+        app.classList.toggle('show-view');
+        this.textContent = app.classList.contains('show-view') ? 'Search' : 'View';
+    ">View</button>
 </body>
 </html>
 {{end}}

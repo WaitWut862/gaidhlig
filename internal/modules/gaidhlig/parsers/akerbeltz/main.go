@@ -116,9 +116,7 @@ func main() {
 
 		content, err := fetchArticle(a.url)
 
-		//--debug--
 		fmt.Printf("  Content length: %d bytes\n", len(content))
-		//--debug--
 
 		if err != nil {
 			fmt.Printf("  Fetch error: %v\n", err)
@@ -305,30 +303,4 @@ func ensureTag(db *sql.DB, category, label, description string) (int64, error) {
 		return 0, err
 	}
 	return res.LastInsertId()
-}
-
-// func min(a, b int) int {
-// 	if a < b {
-// 		return a
-// 	}
-// 	return b
-// }
-
-func stripWikiMarkup(s string) string {
-	scanner := bufio.NewScanner(strings.NewReader(s))
-	var out strings.Builder
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "{{") ||
-			strings.HasPrefix(line, "[[Category") ||
-			strings.HasPrefix(line, "[[File") ||
-			strings.HasPrefix(line, "[[Faidhle") {
-			continue
-		}
-		line = strings.ReplaceAll(line, "'''", "")
-		line = strings.ReplaceAll(line, "''", "")
-		out.WriteString(line)
-		out.WriteString("\n")
-	}
-	return out.String()
 }

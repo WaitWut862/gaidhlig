@@ -1,18 +1,27 @@
 {{define "results_words"}}
 <div id="filters">
+    <select name="mode"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form, #filters">
+        <option value="contains" {{if eq .Mode "contains"}}selected{{end}}>Contains</option>
+        <option value="exact" {{if eq .Mode "exact"}}selected{{end}}>Exact</option>
+        <option value="lemma" {{if eq .Mode "lemma"}}selected{{end}}>Lemma</option>
+    </select>
     <select name="pos"
         hx-get="/search"
         hx-target="#search-results"
         hx-trigger="change"
         hx-include="#search-form">
         <option value="">All parts of speech</option>
-        <option value="noun">Noun</option>
-        <option value="verb">Verb</option>
-        <option value="adj">Adjective</option>
-        <option value="adv">Adverb</option>
-        <option value="prep">Preposition</option>
-        <option value="pron">Pronoun</option>
-        <option value="conj">Conjunction</option>
+        <option value="noun" {{if eq .POS "noun"}}selected{{end}}>Noun</option>
+        <option value="verb" {{if eq .POS "verb"}}selected{{end}}>Verb</option>
+        <option value="adj" {{if eq .POS "adj"}}selected{{end}}>Adjective</option>
+        <option value="adv" {{if eq .POS "adv"}}selected{{end}}>Adverb</option>
+        <option value="prep" {{if eq .POS "prep"}}selected{{end}}>Preposition</option>
+        <option value="pron" {{if eq .POS "pron"}}selected{{end}}>Pronoun</option>
+        <option value="conj" {{if eq .POS "conj"}}selected{{end}}>Conjunction</option>
     </select>
 </div>
 {{range .Items}}
@@ -25,5 +34,12 @@
 </div>
 {{else}}
 <p class="no-results">No words found.</p>
+{{end}}
+{{if and .Items (ne .NextOffset -1)}}
+<div hx-get="/search?type=words&query={{.Query}}&pos={{.POS}}&offset={{.NextOffset}}"
+    hx-target="this"
+    hx-trigger="intersect once"
+    hx-swap="outerHTML">
+</div>
 {{end}}
 {{end}}

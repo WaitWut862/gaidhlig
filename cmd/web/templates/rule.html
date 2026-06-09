@@ -1,11 +1,10 @@
 {{define "rule"}}
 <div class="rule-entry">
-    <h2>{{.Title}}</h2>
-    <div class="meta">
-        <span class="category">{{.Category}}</span>
-        <span class="difficulty">{{.Difficulty}}</span>
-        {{if eq .Verified 0}}<span class="unverified">unverified</span>{{end}}
+    <h2 class="rule-title">{{.Title}}</h2>
+    <div class="rule-meta">
+        {{if .Category}}{{.Category}}{{end}}{{if and .Category .Difficulty}} · {{end}}{{if .Difficulty}}{{.Difficulty}}{{end}}
+        {{if eq .Verified 0}} · <span style="color: var(--accent-soft);">unverified</span>{{end}}
     </div>
-    <p class="rule-text">{{.Text}}</p>
+    <p class="rule-body">{{.Text}}</p>
 </div>
 {{end}}

@@ -42,14 +42,23 @@ func SearchSentences(db *sql.DB, query string, exactForm bool, offset int) ([]Se
 
 	if exactForm {
 		rows, err = db.Query(`
-			SELECT id, text_gd, text_en
-			FROM sentences
-			WHERE text_gd LIKE '%' || ? || '%'
-			ORDER BY id
-			LIMIT 50 OFFSET ?`,
+		    SELECT id, text_gd, text_en
+		    FROM sentences
+		    WHERE text_gd LIKE '%' || ? || '%'
+		    ORDER BY id
+		    LIMIT 50 OFFSET ?`,
 			query, offset,
 		)
 	} else {
+		var lemma string
+		err = db.QueryRow(`
+			SELECT lemma_text FROM sentence_analyses
+			WHERE token = ?
+			LIMIT 1`, query).Scan(&lemma)
+		if err != nil {
+			// no lemma found — fall back to token match
+			lemma = query
+		}
 		rows, err = db.Query(`
 			SELECT DISTINCT s.id, s.text_gd, s.text_en
 			FROM sentences s
@@ -57,14 +66,13 @@ func SearchSentences(db *sql.DB, query string, exactForm bool, offset int) ([]Se
 			WHERE sa.lemma_text = ?
 			ORDER BY s.id
 			LIMIT 50 OFFSET ?`,
-			query, offset,
+			lemma, offset,
 		)
 	}
 
 	if err != nil {
 		return nil, err
 	}
-
 	var results []SentenceEntry
 	for rows.Next() {
 		var r SentenceEntry
@@ -75,7 +83,6 @@ func SearchSentences(db *sql.DB, query string, exactForm bool, offset int) ([]Se
 		results = append(results, r)
 	}
 	rows.Close()
-
 	return results, rows.Err()
 }
 

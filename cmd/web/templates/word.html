@@ -1,30 +1,46 @@
 {{define "word"}}
 <div class="word-entry">
-    <h2>{{.Word}}</h2>
-    <div class="meta">
-        {{if .POS}}<span class="pos">{{.POS}}</span>{{end}}
-        {{if .Gender}}<span class="gender">{{.Gender}}</span>{{end}}
+    <h2 class="word-title">{{.Word}}</h2>
+    <div class="tags">
+        {{if .POS}}<span class="tag">{{.POS}}</span>{{end}}
+        {{if .Gender}}<span class="tag">{{.Gender}}</span>{{end}}
     </div>
+
+    {{if .IPA}}
+    <p class="word-lemma">/ {{.IPA}} /</p>
+    {{end}}
+
     {{if .Senses}}
-    <div class="senses">
-        <h3>Definitions</h3>
-        {{range .Senses}}
-        <div class="sense">{{.Gloss}}
-            {{if .ExampleGd}}
-            <div class="example">
-                <p class="example-gd">{{.ExampleGd}}</p>
-                <p class="example-en">{{.ExampleEn}}</p>
-            </div>
-            {{end}}
+    <p class="detail-section-heading">Definitions</p>
+    {{range .Senses}}
+    <div class="definition">
+        {{.Gloss}}
+        {{if .ExampleGd}}
+        <div class="example" style="margin-top: 8px;">
+            <p class="example-gd" style="font-style: italic; color: var(--ink);">{{.ExampleGd}}</p>
+            <p class="example-en" style="font-size: 15px; color: var(--ink-light);">{{.ExampleEn}}</p>
         </div>
         {{end}}
     </div>
     {{end}}
+    {{end}}
+
+    {{if .Forms}}
+    <p class="detail-section-heading">Forms</p>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        {{range .Forms}}
+        <div style="font-family: 'Source Code Pro', monospace; font-size: 13px; color: var(--ink-mid);">
+            {{.Form}} <span style="color: var(--ink-light);">{{.Tags}}</span>
+        </div>
+        {{end}}
+    </div>
+    {{end}}
+
     {{if .Synonyms}}
-    <div class="synonyms">
-        <h3>Synonyms</h3>
+    <p class="detail-section-heading">Synonyms</p>
+    <div class="tags">
         {{range .Synonyms}}
-        <span class="synonym"
+        <span class="tag" style="cursor: pointer; color: var(--accent);"
             hx-get="/word/{{.ID}}"
             hx-target="#view-panel"
             hx-trigger="click"
@@ -32,41 +48,30 @@
         {{end}}
     </div>
     {{end}}
+
     {{if .Parents}}
-    <div class="parents">
-        <h3>Derives from</h3>
+    <p class="detail-section-heading">Derives from</p>
+    <div class="tags">
         {{range .Parents}}
-        <span class="parent">{{.Word}}</span>
+        <span class="tag">{{.Word}}</span>
         {{end}}
     </div>
     {{end}}
-    {{if .IPA}}
-    <div class="ipa">
-        <h3>Pronunciation</h3>
-        <p>{{.IPA}}</p>
-    </div>
-    {{end}}
-    {{if .Etymology}}
-    <div class="etymology">
-        <h3>Etymology</h3>
-        <p>{{.Etymology}}</p>
-    </div>
-    {{end}}
-    {{if .Forms}}
-    <div class="forms">
-        <h3>Forms</h3>
-        {{range .Forms}}
-        <div class="form">{{.Form}} <span class="tags">{{.Tags}}</span></div>
-        {{end}}
-    </div>
-    {{end}}
+
     {{if .Children}}
-    <div class="children">
-        <h3>Derived words</h3>
+    <p class="detail-section-heading">Derived words</p>
+    <div style="display: flex; flex-direction: column; gap: 4px;">
         {{range .Children}}
-        <div class="child">{{.Word}}{{if .English}} — {{.English}}{{end}}</div>
+        <div style="font-size: 16px; color: var(--ink-mid);">
+            {{.Word}}{{if .English}} <span style="color: var(--ink-light);">— {{.English}}</span>{{end}}
+        </div>
         {{end}}
     </div>
+    {{end}}
+
+    {{if .Etymology}}
+    <p class="detail-section-heading">Etymology</p>
+    <p class="rule-body">{{.Etymology}}</p>
     {{end}}
 </div>
 {{end}}

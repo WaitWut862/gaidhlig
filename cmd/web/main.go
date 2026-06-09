@@ -35,7 +35,7 @@ func main() {
 	mux.HandleFunc("/word/{id}", app.handleWord)
 	mux.HandleFunc("/sentence/{id}", app.handleSentence)
 	mux.HandleFunc("/rule/{id}", app.handleRule)
-	mux.HandleFunc("/search/more", app.handleSearchMore)
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./cmd/web/static"))))
 
 	log.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
@@ -107,82 +107,70 @@ func (a *App) handleSearch(w http.ResponseWriter, r *http.Request) {
 	pos := r.URL.Query().Get("pos")
 	exactForm := r.URL.Query().Get("exact") == "true"
 	category := r.URL.Query().Get("category")
+	mode := r.URL.Query().Get("mode")
 	difficulty := r.URL.Query().Get("difficulty")
 	offsetStr := r.URL.Query().Get("offset")
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
 		offset = 0
 	}
-	switch queryType {
-	case "words":
-		results, err := db.SearchWords(a.DB, query, pos, offset)
-		if err != nil {
-			log.Println("Error:", err)
-			return
-		}
-		view := db.WordListView{Items: results, NextOffset: offset + 50, Query: query, POS: pos}
-		if err := tmpl.ExecuteTemplate(w, "results_words", view); err != nil {
-			log.Println("Template error:", err)
-		}
-	case "sentences":
-		results, err := db.SearchSentences(a.DB, query, exactForm, offset)
-		if err != nil {
-			log.Println("Error:", err)
-			return
-		}
-		view := db.SentenceListView{Items: results, NextOffset: offset + 50, Query: query, Exact: r.URL.Query().Get("exact")}
-		if err := tmpl.ExecuteTemplate(w, "results_sentences", view); err != nil {
-			log.Println("Template error:", err)
-		}
-	case "rules":
-		results, err := db.SearchRules(a.DB, query, category, difficulty, offset)
-		if err != nil {
-			log.Println("Error:", err)
-			return
-		}
-		view := db.RuleListView{Items: results, NextOffset: offset + 50, Query: query, Category: category, Difficulty: difficulty}
-		if err := tmpl.ExecuteTemplate(w, "results_rules", view); err != nil {
-			log.Println("Template error:", err)
-		}
-	}
-}
 
-func (a *App) handleSearchMore(w http.ResponseWriter, r *http.Request) {
-	queryType := r.URL.Query().Get("type")
-	query := r.URL.Query().Get("query")
-	pos := r.URL.Query().Get("pos")
-	exactForm := r.URL.Query().Get("exact") == "true"
-	category := r.URL.Query().Get("category")
-	difficulty := r.URL.Query().Get("difficulty")
-	offsetStr := r.URL.Query().Get("offset")
-	offset, err := strconv.Atoi(offsetStr)
-	if err != nil {
-		offset = 0
-	}
+	initial := offset == 0
+
 	switch queryType {
 	case "words":
-		results, err := db.SearchWords(a.DB, query, pos, offset)
+		results, err := db.SearchWords(a.DB, query, pos, mode, offset)
 		if err != nil {
 			log.Println("Error:", err)
 			return
 		}
-		view := db.WordListView{Items: results, NextOffset: offset + 50, Query: query, POS: pos}
-		tmpl.ExecuteTemplate(w, "items_words", view)
+		nextOffset := offset + 50
+		if len(results) < 50 {
+			nextOffset = -1
+		}
+		view := db.WordListView{Items: results, NextOffset: nextOffset, Query: query, POS: pos, Mode: mode}
+		t := "items_words"
+		if initial {
+			t = "results_words"
+		}
+		if err := tmpl.ExecuteTemplate(w, t, view); err != nil {
+			log.Println("Template error:", err)
+		}
 	case "sentences":
 		results, err := db.SearchSentences(a.DB, query, exactForm, offset)
 		if err != nil {
 			log.Println("Error:", err)
 			return
 		}
-		view := db.SentenceListView{Items: results, NextOffset: offset + 50, Query: query, Exact: r.URL.Query().Get("exact")}
-		tmpl.ExecuteTemplate(w, "items_sentences", view)
+		nextOffset := offset + 50
+		if len(results) < 50 {
+			nextOffset = -1
+		}
+		view := db.SentenceListView{Items: results, NextOffset: nextOffset, Query: query, Exact: r.URL.Query().Get("exact")}
+		t := "items_sentences"
+		if initial {
+			t = "results_sentences"
+		}
+		if err := tmpl.ExecuteTemplate(w, t, view); err != nil {
+			log.Println("Template error:", err)
+		}
 	case "rules":
 		results, err := db.SearchRules(a.DB, query, category, difficulty, offset)
 		if err != nil {
 			log.Println("Error:", err)
 			return
 		}
-		view := db.RuleListView{Items: results, NextOffset: offset + 50, Query: query, Category: category, Difficulty: difficulty}
-		tmpl.ExecuteTemplate(w, "items_rules", view)
+		nextOffset := offset + 50
+		if len(results) < 50 {
+			nextOffset = -1
+		}
+		view := db.RuleListView{Items: results, NextOffset: nextOffset, Query: query, Category: category, Difficulty: difficulty}
+		t := "items_rules"
+		if initial {
+			t = "results_rules"
+		}
+		if err := tmpl.ExecuteTemplate(w, t, view); err != nil {
+			log.Println("Template error:", err)
+		}
 	}
 }

@@ -5,8 +5,8 @@
         hx-target="#search-results"
         hx-trigger="change"
         hx-include="#search-form">
-        <option value="false">Lemma match</option>
-        <option value="true">Exact form</option>
+        <option value="false" {{if eq .Exact "false"}}selected{{end}}>Lemma match</option>
+        <option value="true" {{if eq .Exact "true"}}selected{{end}}>Form match</option>
     </select>
 </div>
 {{range .Items}}
@@ -19,5 +19,12 @@
 </div>
 {{else}}
 <p class="no-results">No sentences found.</p>
+{{end}}
+{{if and .Items (ne .NextOffset -1)}}
+<div hx-get="/search?type=sentences&query={{.Query}}&exact={{.Exact}}&offset={{.NextOffset}}"
+    hx-target="this"
+    hx-trigger="intersect once"
+    hx-swap="outerHTML">
+</div>
 {{end}}
 {{end}}
