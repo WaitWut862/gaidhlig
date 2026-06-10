@@ -8,17 +8,17 @@ import (
 	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
-	"language_v1/cmd/web/db"
+	"language_v1/internal/web/db"
 )
 
-var tmpl = template.Must(template.ParseGlob("./cmd/web/templates/*.html"))
+var tmpl = template.Must(template.ParseGlob("./internal/web/templates/*.html"))
 
 type App struct {
 	DB *sql.DB
 }
 
 func main() {
-	database, err := sql.Open("sqlite3", "./internal/modules/gaidhlig/gaidhlig.db")
+	database, err := sql.Open("sqlite3", "./internal/gaidhlig/gaidhlig.db")
 	if err != nil {
 		log.Fatal("Error opening db:", err)
 	}
@@ -35,7 +35,7 @@ func main() {
 	mux.HandleFunc("/word/{id}", app.handleWord)
 	mux.HandleFunc("/sentence/{id}", app.handleSentence)
 	mux.HandleFunc("/rule/{id}", app.handleRule)
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./cmd/web/static"))))
+	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./internal/web/static"))))
 
 	log.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))

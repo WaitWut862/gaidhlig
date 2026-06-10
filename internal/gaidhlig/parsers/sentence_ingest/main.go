@@ -8,11 +8,11 @@ import (
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
-	gla "language_v1/internal/modules/gaidhlig/gla"
+	gla "language_v1/internal/gaidhlig/gla"
 )
 
 func main() {
-	db, err := sql.Open("sqlite3", "./internal/modules/gaidhlig/gaidhlig.db")
+	db, err := sql.Open("sqlite3", "./internal/gaidhlig/gaidhlig.db")
 	if err != nil {
 		fmt.Println("Error opening db:", err)
 		return

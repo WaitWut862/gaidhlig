@@ -116,7 +116,7 @@ func main() {
 			continue
 		}
 
-		result, err := insertEntry(db, stmts, entry)
+		result, err := insertEntry(stmts, entry)
 		if err != nil {
 			// Hard failure — lemma itself didn't insert
 			fmt.Printf("Line %d: failed to insert %q (%s): %v\n",
@@ -228,7 +228,7 @@ func closeStatements(s *statements) {
 	s.insertDerived.Close()
 }
 
-func insertEntry(db *sql.DB, s *statements, entry KaikkiEntry) (insertResult, error) {
+func insertEntry(s *statements, entry KaikkiEntry) (insertResult, error) {
 	result := insertResult{}
 
 	ipa := ""

@@ -84,11 +84,10 @@ func main() {
 	scanner.Buffer(make([]byte, 1024*1024), 1024*1024)
 
 	var (
-		current     *dwellyEntry
-		currentLine string
-		inserted    int
-		skipped     int
-		total       int
+		current  *dwellyEntry
+		inserted int
+		skipped  int
+		total    int
 	)
 
 	flush := func() {
@@ -101,7 +100,7 @@ func main() {
 			current = nil
 			return
 		}
-		if err := insertEntry(db, stmts, current); err != nil {
+		if err := insertEntry(stmts, current); err != nil {
 			fmt.Printf("Insert error for %q: %v\n", current.word, err)
 		} else {
 			inserted++
@@ -136,7 +135,6 @@ func main() {
 					english: english,
 				})
 			}
-			currentLine = cleaned
 			continue
 		}
 
@@ -161,7 +159,6 @@ func main() {
 			}
 
 			current = entry
-			currentLine = cleaned
 			continue
 		}
 
@@ -175,7 +172,6 @@ func main() {
 					current.senses = append(current.senses, gloss)
 				}
 			}
-			currentLine = cleaned
 			continue
 		}
 
@@ -189,7 +185,6 @@ func main() {
 			}
 		}
 
-		currentLine = currentLine // suppress unused warning
 	}
 
 	// Flush final entry
@@ -258,7 +253,7 @@ func closeStatements(s *statements) {
 	s.insertTag.Close()
 }
 
-func insertEntry(db *sql.DB, s *statements, e *dwellyEntry) error {
+func insertEntry(s *statements, e *dwellyEntry) error {
 	if len(e.senses) == 0 {
 		return nil // nothing useful to insert
 	}
