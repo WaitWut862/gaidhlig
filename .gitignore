@@ -1,5 +1,5 @@
 # compiled binaries
-web
+/web
 cmd/web
 internal/web/tmp/
 internal/gaidhlig/rule_manager/rule_manager

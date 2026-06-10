@@ -1,0 +1,49 @@
+{{define "results_rules"}}
+<div id="filters">
+    <select name="category"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form">
+        <option value="">All categories</option>
+        <option value="syntax" {{if eq .Category "syntax"}}selected{{end}}>Syntax</option>
+        <option value="morphology" {{if eq .Category "morphology"}}selected{{end}}>Morphology</option>
+        <option value="phonology" {{if eq .Category "phonology"}}selected{{end}}>Phonology</option>
+        <option value="phonetics" {{if eq .Category "phonetics"}}selected{{end}}>Phonetics</option>
+        <option value="typology" {{if eq .Category "typology"}}selected{{end}}>Typology</option>
+        <option value="terminology" {{if eq .Category "terminology"}}selected{{end}}>Terminology</option>
+    </select>
+    <select name="difficulty"
+        hx-get="/search"
+        hx-target="#search-results"
+        hx-trigger="change"
+        hx-include="#search-form">
+        <option value="">All levels</option>
+        <option value="A1" {{if eq .Difficulty "A1"}}selected{{end}}>A1</option>
+        <option value="A2" {{if eq .Difficulty "A2"}}selected{{end}}>A2</option>
+        <option value="B1" {{if eq .Difficulty "B1"}}selected{{end}}>B1</option>
+        <option value="B2" {{if eq .Difficulty "B2"}}selected{{end}}>B2</option>
+        <option value="C1" {{if eq .Difficulty "C1"}}selected{{end}}>C1</option>
+        <option value="C2" {{if eq .Difficulty "C2"}}selected{{end}}>C2</option>
+    </select>
+</div>
+{{range .Items}}
+<div class="result-item"
+    hx-get="/rule/{{.ID}}"
+    hx-target="#view-panel"
+    hx-trigger="click"
+    hx-swap="innerHTML">
+    {{.Title}}
+    <span class="meta">{{.Category}} / {{.Difficulty}}</span>
+</div>
+{{else}}
+<p class="no-results">No rules found.</p>
+{{end}}
+{{if and .Items (ne .NextOffset -1)}}
+<div hx-get="/search?type=rules&query={{.Query}}&category={{.Category}}&difficulty={{.Difficulty}}&offset={{.NextOffset}}"
+    hx-target="this"
+    hx-trigger="intersect once"
+    hx-swap="outerHTML">
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,36 @@
+{{define "sentence"}}
+<div class="sentence-entry">
+    <p class="sentence-text">{{.Entry.TextGd}}</p>
+    {{if .Entry.TextEn}}
+    <p style="font-size: 16px; color: var(--ink-light); margin-bottom: 24px;">{{.Entry.TextEn}}</p>
+    {{end}}
+
+    {{if .Tokens}}
+    <p class="detail-section-heading">Token breakdown</p>
+    <table class="token-table">
+        <thead>
+            <tr>
+                <th>Token</th>
+                <th>Lemma</th>
+                <th>POS</th>
+                <th>Features</th>
+                <th>Relation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Tokens}}
+            <tr>
+                <td class="token-form {{if .LemmaID.Valid}}token-linked{{end}}">{{.Token}}</td>
+                <td>{{.LemmaText}}</td>
+                <td>{{.UPOS}}</td>
+                <td>{{.Feats}}</td>
+                <td>{{.DepRel}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    <p class="no-results">No breakdown available.</p>
+    {{end}}
+</div>
+{{end}}
