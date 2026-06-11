@@ -33,7 +33,7 @@ var (
 
 func main() {
 	var err error
-	db, err = sql.Open("sqlite3", "../gaidhlig.db")
+	db, err = sql.Open("sqlite3", "./internal/gaidhlig/gaidhlig.db")
 	if err != nil {
 		panic(err)
 	}

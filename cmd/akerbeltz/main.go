@@ -75,7 +75,7 @@ type rule struct {
 }
 
 func main() {
-	db, err := sql.Open("sqlite3", "../../gaidhlig.db")
+	db, err := sql.Open("sqlite3", "./internal/gaidhlig/gaidhlig.db")
 	if err != nil {
 		fmt.Println("Error opening db:", err)
 		return

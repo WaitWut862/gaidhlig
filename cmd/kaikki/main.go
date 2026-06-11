@@ -66,14 +66,14 @@ type insertResult struct {
 }
 
 func main() {
-	db, err := sql.Open("sqlite3", "../../gaidhlig.db")
+	db, err := sql.Open("sqlite3", "./internal/gaidhlig/gaidhlig.db")
 	if err != nil {
 		fmt.Println("Error opening db:", err)
 		return
 	}
 	defer db.Close()
 
-	file, err := os.Open("kaikki.org-dictionary-ScottishGaelic.jsonl")
+	file, err := os.Open("./resources/kaikki.org-dictionary-ScottishGaelic.jsonl")
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return

@@ -49,7 +49,7 @@ type dwellyDerived struct {
 }
 
 func main() {
-	db, err := sql.Open("sqlite3", "../../gaidhlig.db")
+	db, err := sql.Open("sqlite3", "./internal/gaidhlig/gaidhlig.db")
 	if err != nil {
 		fmt.Println("Error opening db:", err)
 		return
@@ -66,7 +66,7 @@ func main() {
 		return
 	}
 
-	file, err := os.Open("Dwelly_djvu.txt")
+	file, err := os.Open("./resources/Dwelly_djvu.txt")
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return

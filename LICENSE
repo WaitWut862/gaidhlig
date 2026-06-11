@@ -1,10 +1,20 @@
 Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+Copyright (c) 2026 Carson Morton
 
-Copyright (c) 2026 Carson
+This project's original code and content are licensed under the Creative
+Commons Attribution-ShareAlike 4.0 International License. To view a copy of
+this license, visit: https://creativecommons.org/licenses/by-sa/4.0/
 
-This work is licensed under the Creative Commons Attribution-ShareAlike 4.0
-International License. To view a copy of this license, visit:
-https://creativecommons.org/licenses/by-sa/4.0/
+It also incorporates or depends on the following third-party resources,
+which remain under their own licenses:
 
-This project incorporates data from the Unified Scottish Gaelic Wordnet (USGW),
-licensed under CC BY-SA 3.0 by Gábor Bella et al., LREC 2020.
+- Lexical data extracted from Wiktionary via kaikki.org
+  — CC BY-SA and GFDL.
+- Dwelly's Illustrated Gaelic to English Dictionary (1911)
+  — public domain.
+- Grammar rules derived as factual restatements from articles on
+  Akerbeltz (akerbeltz.org).
+- The scottish_gaelic-arcosg-ud-2.5 UDPipe model (ÚFAL/LINDAT),
+  used to parse example sentences — CC BY-NC-SA 4.0 (non-commercial).
+  Built on the ARCOSG treebank (Batchelor 2019; Lamb et al. 2016),
+  itself CC BY-SA 4.0.

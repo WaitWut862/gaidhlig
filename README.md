@@ -74,12 +74,14 @@ In my original design for this project, I had hoped to make a program which coul
 - **HTMX** — frontend interactivity without a JavaScript framework
 - **UDPipe** — morphological analysis and CoNLL-U parsing
 
+
 ## Data Sources
 
 - **kaikki.org** — Scottish Gaelic Wiktionary dump; ~17,000 lemmas with definitions, forms, IPA, and etymology
 - **Dwelly's Gaelic-English Dictionary** — OCR text; ~55,000 additional entries
 - **Akerbeltz.org** — 342 grammar rules across syntax, morphology, phonology, and related categories
 - **scottish_gaelic-arcosg-ud-2.5** — UDPipe model used to parse 1,200 example sentences into CoNLL-U format
+
 
 ## Setup
 
@@ -98,6 +100,7 @@ In my original design for this project, I had hoped to make a program which coul
 - The web server structure does not yet account for multiple language modules
 - No user accounts or progress tracking or lessons of any form in this version
 
+
 ## Roadmap
 
 - User accounts and progress tracking
@@ -107,8 +110,10 @@ In my original design for this project, I had hoped to make a program which coul
 - Repopulate lower quality data entries to match the standards of kaikki
 - Expand grammar ruleset towards comprehensive coverage and verify rules manually for accuracy
 
+
 ## License
 
-This project is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
-
-Incorporates data from the [Unified Scottish Gaelic Wordnet](http://ukc.disi.unitn.it/index.php/gaelic/) by Gábor Bella et al., licensed under CC BY-SA 3.0.
+This project's original code and content are licensed under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+It also incorporates third-party resources under their own licenses —
+see the LICENSE file for the full list and terms.
