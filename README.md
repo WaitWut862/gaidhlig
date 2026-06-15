@@ -4,7 +4,7 @@
 
 Passage is a linguistic research tool for Scottish Gaelic, and the first iteration (v1) of a larger language learning platform in development. What you see here is the querying layer; the data and interface will likely change substantially by later versions.
 
-#### Video Demo
+#### Video Demo  https://youtu.be/dxEL6NKWckY
 
 
 ## Features
@@ -24,24 +24,26 @@ Passage is a linguistic research tool for Scottish Gaelic, and the first iterati
 - `LICENSE` — CC BY-SA 4.0 license
 - `README.md` — this file
 
-**`cmd/main.go`**
-The entry point for the web server. Initializes the database connection, registers all HTTP routes, defines the `App` struct that holds the database connection, and implements all request handlers.
+**`cmd/`**
+Contains all executable entry points.
+
+- `cmd/server/main.go` — the entry point for the web server. Initializes the database connection, registers all HTTP routes, defines the `App` struct that holds the database connection, and implements all request handlers.
+- `cmd/akerbeltz/` — scrapes Akerbeltz grammar articles, strips HTML, and uses AI to extract structured grammar rules for insertion into the database
+- `cmd/dwelly/` — reads Dwelly's Gaelic-English Dictionary in plain text form and extracts word entries not already present in the database
+- `cmd/kaikki/` — reads the kaikki.org Scottish Gaelic JSON dictionary and distributes the data into the database according to the schema
+- `cmd/sentence_ingest/` — takes a sentence string, passes it through the GLA for morphological analysis, and stores both the sentence and its token-level analysis in the database
+- `cmd/rule_manager/` — a standalone developer tool providing a GUI to read, verify, edit, and delete grammar rules in the database
 
 **`internal/gaidhlig/`**
 Contains all data and tooling specific to the Scottish Gaelic module.
 
 - `gaidhlig.db` — the SQLite database
 - `gla/` — the Gàidhlig Linguistic Analyser bridge. UDPipe has a Python binding but no Go binding, so `analyse.py` wraps UDPipe and `gla.go` calls it as a subprocess, exposing native Go functions that return CoNLL-U parse results. `scottish_gaelic.udpipe` is the UDPipe model file.
-- `parsers/akerbeltz/` — scrapes Akerbeltz grammar articles, strips HTML, and uses AI to extract structured grammar rules for insertion into the database
-- `parsers/dwelly/` — reads Dwelly's Gaelic-English Dictionary in plain text form and extracts word entries not already present in the database
-- `parsers/kaikki/` — reads the kaikki.org Scottish Gaelic JSON dictionary and distributes the data into the database according to the schema
-- `parsers/sentence_ingest/` — takes a sentence string, passes it through the GLA for morphological analysis, and stores both the sentence and its token-level analysis in the database
-- `rule_manager/` — a standalone developer tool providing a GUI to read, verify, edit, and delete grammar rules in the database
 
 **`internal/web/`**
 The web application layer.
 
-- `db/` — query functions organized by content type (`words.go`, `sentences.go`, `rules.go`). These functions are called by the handlers in `main.go` to retrieve data from the database and return it as Go structs.
+- `db/` — query functions organized by content type (`words.go`, `sentences.go`, `rules.go`). These functions are called by the handlers in `cmd/server/main.go` to retrieve data from the database and return it as Go structs.
 - `static/style.css` — all styling for the application
 - `templates/` — HTML templates rendered server-side. `base.html` is the full page shell. `results_*` templates render a full search panel response including filters. `items_*` templates render only result rows for infinite scroll loads. `word.html`, `sentence.html`, and `rule.html` are detail view fragments loaded into the right panel on click.
 
@@ -86,8 +88,8 @@ In my original design for this project, I had hoped to make a program which coul
 ## Setup
 
 1. Clone the repository
-2. Ensure Go 1.22+ is installed
-3. From the project root, run: `go run ./cmd`
+2. Ensure Go 1.25+ is installed
+3. From the project root, run: `go run ./cmd/server`
 4. Open `http://localhost:8080` in your browser
 
 *Note for the grader: some Python is included in the repository, but it is not part of the setup. It is only there to show how the project's data was gathered, and is not meant to be run by the user.*

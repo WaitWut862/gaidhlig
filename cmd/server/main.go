@@ -2,16 +2,41 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
+	"sort"
 	"strconv"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 	"language_v1/internal/web/db"
 )
 
-var tmpl = template.Must(template.ParseGlob("./internal/web/templates/*.html"))
+func featsFormat(feats string) string {
+	if feats == "" {
+		return ""
+	}
+	var m map[string]string
+	if err := json.Unmarshal([]byte(feats), &m); err != nil {
+		return feats
+	}
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	pairs := make([]string, 0, len(keys))
+	for _, k := range keys {
+		pairs = append(pairs, k+"="+m[k])
+	}
+	return strings.Join(pairs, "|")
+}
+
+var tmpl = template.Must(template.New("").Funcs(template.FuncMap{
+	"featsFormat": featsFormat,
+}).ParseGlob("./internal/web/templates/*.html"))
 
 type App struct {
 	DB *sql.DB

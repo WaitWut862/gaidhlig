@@ -63,45 +63,51 @@ type WordResult struct {
 func SearchWords(db *sql.DB, query, pos, mode string, offset int) ([]WordResult, error) {
 	var rows *sql.Rows
 	var err error
-
 	switch mode {
 	case "exact":
 		rows, err = db.Query(`
 			SELECT id, word, pos FROM lemmas
 			WHERE (? = '' OR LOWER(word) = LOWER(?))
 			AND (? = '' OR pos = ?)
+			AND pos NOT IN ('proverb', 'phrase')
 			ORDER BY word
 			LIMIT 50 OFFSET ?`,
 			query, query, pos, pos, offset,
 		)
+
 	case "lemma":
 		var lemma string
 		err = db.QueryRow(`
-			SELECT lemma_text FROM sentence_analyses
-			WHERE token = ?
-			LIMIT 1`, query).Scan(&lemma)
+	        SELECT lemma_text FROM sentence_analyses
+	        WHERE LOWER(token) = LOWER(?)
+	        LIMIT 1`, query).Scan(&lemma)
 		if err != nil {
 			lemma = query
 		}
 		rows, err = db.Query(`
-			SELECT id, word, pos FROM lemmas
-			WHERE (? = '' OR LOWER(word) LIKE '%' || LOWER(?) || '%')
-			AND (? = '' OR pos = ?)
-			ORDER BY word
-			LIMIT 50 OFFSET ?`,
-			lemma, lemma, pos, pos, offset,
+	        SELECT DISTINCT l.id, l.word, l.pos FROM lemmas l
+	        WHERE LOWER(l.word) IN (
+	            SELECT DISTINCT LOWER(token) FROM sentence_analyses
+	            WHERE LOWER(lemma_text) = LOWER(?)
+	        )
+	        AND (? = '' OR l.pos = ?)
+	        AND l.pos NOT IN ('proverb', 'phrase')
+	        ORDER BY l.word
+	        LIMIT 50 OFFSET ?`,
+			lemma, pos, pos, offset,
 		)
+
 	default: // contains
 		rows, err = db.Query(`
 			SELECT id, word, pos FROM lemmas
 			WHERE (? = '' OR LOWER(word) LIKE '%' || LOWER(?) || '%')
 			AND (? = '' OR pos = ?)
+			AND pos NOT IN ('proverb', 'phrase')
 			ORDER BY word
 			LIMIT 50 OFFSET ?`,
 			query, query, pos, pos, offset,
 		)
 	}
-
 	if err != nil {
 		return nil, err
 	}

@@ -36,7 +36,7 @@
 <p class="no-results">No words found.</p>
 {{end}}
 {{if and .Items (ne .NextOffset -1)}}
-<div hx-get="/search?type=words&query={{.Query}}&pos={{.POS}}&offset={{.NextOffset}}"
+<div hx-get="/search?type=words&query={{.Query}}&pos={{.POS}}&mode={{.Mode}}&offset={{.NextOffset}}"
     hx-target="this"
     hx-trigger="intersect once"
     hx-swap="outerHTML">

@@ -23,7 +23,7 @@
                 <td class="token-form {{if .LemmaID.Valid}}token-linked{{end}}">{{.Token}}</td>
                 <td>{{.LemmaText}}</td>
                 <td>{{.UPOS}}</td>
-                <td>{{.Feats}}</td>
+                <td>{{featsFormat .Feats}}</td>
                 <td>{{.DepRel}}</td>
             </tr>
             {{end}}

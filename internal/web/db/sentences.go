@@ -39,7 +39,6 @@ type Token struct {
 func SearchSentences(db *sql.DB, query string, exactForm bool, offset int) ([]SentenceEntry, error) {
 	var rows *sql.Rows
 	var err error
-
 	if exactForm {
 		rows, err = db.Query(`
 		    SELECT id, text_gd, text_en
@@ -53,10 +52,9 @@ func SearchSentences(db *sql.DB, query string, exactForm bool, offset int) ([]Se
 		var lemma string
 		err = db.QueryRow(`
 			SELECT lemma_text FROM sentence_analyses
-			WHERE token = ?
+			WHERE LOWER(token) = LOWER(?)
 			LIMIT 1`, query).Scan(&lemma)
 		if err != nil {
-			// no lemma found — fall back to token match
 			lemma = query
 		}
 		rows, err = db.Query(`
@@ -69,7 +67,6 @@ func SearchSentences(db *sql.DB, query string, exactForm bool, offset int) ([]Se
 			lemma, offset,
 		)
 	}
-
 	if err != nil {
 		return nil, err
 	}
